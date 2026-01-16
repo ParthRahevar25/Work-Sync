@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+python-jose
+websockets
+httpx
+pydantic
+torch 
+transformers 
+accelerate 
+bitsandbytes 
+cdsentencepiece

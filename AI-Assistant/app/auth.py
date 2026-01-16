@@ -1,0 +1,11 @@
+from jose import jwt, JWTError
+
+SECRET_KEY = "worksync-secret"
+ALGORITHM = "HS256"
+
+def verify_token(token: str):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload   # contains user_id, role
+    except JWTError:
+        return None

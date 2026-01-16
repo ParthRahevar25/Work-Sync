@@ -1,0 +1,8 @@
+[
+  {"text": "How many leaves do I have?", "intent": "leave_balance"},
+  {"text": "Check my leaves", "intent": "leave_balance"},
+  {"text": "Apply for leave", "intent": "leave_apply"},
+  {"text": "Approve leave request", "intent": "leave_approve"},
+  {"text": "Add new employee", "intent": "add_employee"},
+  {"text": "Company policy", "intent": "policy"}
+]

@@ -1,0 +1,6 @@
+question,answer,role
+How many leaves do I have?,You can check your leave balance in the dashboard.,Employee
+How to apply for leave?,Go to the leave section and submit a request.,Employee
+How to approve leave?,Open HR panel and review leave requests.,HR
+How to add employee?,Go to admin panel and add employee.,Admin
+What is company policy?,You can find company policies in documents section.,Employee
