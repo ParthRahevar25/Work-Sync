@@ -10,7 +10,7 @@ def generate_reply(message, role, company_context=""):
 
     outputs = model.generate(
         **inputs,
-        max_new_tokens=150,
+        max_new_tokens=80,
         do_sample=True,
         temperature=0.7
     )

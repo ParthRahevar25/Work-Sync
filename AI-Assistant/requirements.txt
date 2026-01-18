@@ -4,8 +4,8 @@ python-jose
 websockets
 httpx
 pydantic
-torch 
-transformers 
-accelerate 
-bitsandbytes 
-cdsentencepiece
+torch
+transformers
+accelerate
+bitsandbytes
+sentencepiece

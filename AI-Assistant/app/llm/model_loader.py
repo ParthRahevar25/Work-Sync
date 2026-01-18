@@ -1,7 +1,7 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 
-MODEL_NAME = "microsoft/phi-2"
+MODEL_NAME = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 
 tokenizer = None
 model = None
