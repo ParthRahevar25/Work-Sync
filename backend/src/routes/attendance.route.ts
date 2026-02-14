@@ -9,16 +9,20 @@ import { requireRole } from "../middlewares/auth";
 
 const router = Router();
 
-// Employee / Admin
-router.post("/", requireRole(["employee", "admin"]), markAttendance);
+// 🔹 POST /api/attendance/mark
+// Used by employees to check-in/out
+router.post("/mark", requireRole(["employee", "admin", "manager"]), markAttendance);
 
-// Employee
-router.get("/me", requireRole(["employee"]), getMyAttendance);
+// 🔹 GET /api/attendance/my
+// Used by employees to see their own history (the Mon/Tue log)
+router.get("/my", requireRole(["employee", "admin", "manager"]), getMyAttendance);
 
-// Admin / Manager
-router.get("/", requireRole(["admin", "manager"]), getAllAttendance);
+// 🔹 GET /api/attendance/all
+// Used by HR/Admin to see everyone's logs
+router.get("/all", requireRole(["admin", "manager"]), getAllAttendance);
 
-// Admin only
+// 🔹 PUT /api/attendance/:id
+// Used by Admin to correct a record if an employee forgets to check out
 router.put("/:id", requireRole(["admin"]), updateAttendance);
 
 export default router;

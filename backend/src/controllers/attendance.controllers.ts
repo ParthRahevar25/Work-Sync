@@ -1,66 +1,70 @@
 import { Request, Response } from "express";
 import Attendance from "../models/Attendence.model";
 
-// 🔹 Mark attendance (Employee / Admin)
+// 🔹 Mark attendance (Check-In / Check-Out Toggle)
 export const markAttendance = async (req: Request, res: Response) => {
   try {
-    const { date, checkIn, checkOut, status } = req.body;
-
-    // const employeeId = req.user!.userId;
     const employeeId = (req as any).user.userId;
+    const { type } = req.body; 
+    const today = new Date().setHours(0, 0, 0, 0);
 
+    if (type === "checkin") {
+      const attendance = await Attendance.create({
+        employeeId,
+        date: today,
+        checkIn: new Date(),
+        status: "Present",
+      });
+      return res.status(201).json({ message: "Checked in", data: attendance });
+    } 
+    
+    if (type === "checkout") {
+      const record = await Attendance.findOne({ employeeId, date: today, checkOut: null });
+      if (!record) return res.status(404).json({ error: "No active check-in found" });
 
-    const attendance = await Attendance.create({
-      employeeId,
-      date,
-      checkIn,
-      checkOut,
-      status,
-      markedBy: "self",
-    });
+      record.checkOut = new Date();
+      const diff = record.checkOut.getTime() - record.checkIn.getTime();
+      record.workHours = Number((diff / (1000 * 60 * 60)).toFixed(2));
 
-    res.status(201).json({
-      message: "Attendance marked",
-      data: attendance,
-    });
-  } catch (err: any) {
-    if (err.code === 11000) {
-      return res.status(400).json({ error: "Attendance already marked" });
+      await record.save();
+      return res.json({ message: "Checked out", data: record });
     }
-    res.status(500).json({ error: "Failed to mark attendance" });
+  } catch (err: any) {
+    if (err.code === 11000) return res.status(400).json({ error: "Already checked in today" });
+    res.status(500).json({ error: "Server error" });
   }
 };
 
-// 🔹 Get own attendance
+// 🔹 Get own attendance (The missing function 1)
 export const getMyAttendance = async (req: Request, res: Response) => {
-//   const employeeId = req.user!.userId;
-const employeeId = (req as any).user.userId;
-
-
-  const records = await Attendance.find({ employeeId }).sort({ date: -1 });
-
-  res.json(records);
+  try {
+    const employeeId = (req as any).user.userId;
+    const records = await Attendance.find({ employeeId }).sort({ date: -1 });
+    res.json(records);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch record" });
+  }
 };
 
-// 🔹 Admin / Manager view all attendance
+// 🔹 Admin view all attendance (The missing function 2)
 export const getAllAttendance = async (_req: Request, res: Response) => {
-  const records = await Attendance.find()
-    .populate("employeeId", "name employeeCode department")
-    .sort({ date: -1 });
-
-  res.json(records);
+  try {
+    const records = await Attendance.find()
+      .populate("employeeId", "email name role") // Populate User details
+      .sort({ date: -1 });
+    res.json(records);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch records" });
+  }
 };
 
-// 🔹 Update attendance (Admin only)
+// 🔹 Update attendance (The missing function 3)
 export const updateAttendance = async (req: Request, res: Response) => {
-  const { id } = req.params;
-
-  const updated = await Attendance.findByIdAndUpdate(id, req.body, {
-    new: true,
-  });
-
-  res.json({
-    message: "Attendance updated",
-    data: updated,
-  });
+  try {
+    const { id } = req.params;
+    const updated = await Attendance.findByIdAndUpdate(id, req.body, { new: true });
+    res.json({ message: "Attendance updated", data: updated });
+  } catch (err) {
+    res.status(500).json({ error: "Update failed" });
+  }
 };

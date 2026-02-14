@@ -1,14 +1,14 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { AttendanceProvider } from './context/AttendanceContext'
+import { AuthProvider } from './context/AuthContext'
 import AppRoutes from './routes/AppRoutes'
-// import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-   <AppRoutes />
+    <AuthProvider>
+      <AttendanceProvider>
+    <AppRoutes />
+  </AttendanceProvider>
+   </AuthProvider>
   )
 }
 
