@@ -1,6 +1,6 @@
 import api from "@/api/axios";
 import { useEffect, useState, useMemo } from "react";
-import { Search, Download,User, ArrowRightLeft, Timer, Calendar, Mail } from "lucide-react";
+import { Search, Download, User, ArrowRightLeft, Timer, Calendar, Mail } from "lucide-react";
 
 interface AdminAttendanceRecord {
   _id: string;
@@ -31,7 +31,6 @@ const AdminAttendanceView = () => {
     fetchAllLogs();
   }, []);
 
-  // 1. Filter logic for Search
   const filteredLogs = useMemo(() => {
     return allLogs.filter(log => 
       log.employeeId.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -40,66 +39,65 @@ const AdminAttendanceView = () => {
   }, [allLogs, searchTerm]);
 
   return (
-   <div className="space-y-8 animate-in fade-in duration-700">
-      {/* 1. Action Bar matching the Dark Theme */}
-      <div className="flex flex-col md:flex-row justify-between items-center gap-6 bg-[#0F172A] p-6 rounded-[2.5rem] border border-slate-800 shadow-2xl shadow-blue-900/20">
+    <div className="space-y-8 animate-in fade-in duration-700">
+      
+      {/* 1. Action Bar */}
+      <div className="flex flex-col md:flex-row justify-between items-center gap-6 bg-slate-900/40 backdrop-blur-md p-6 rounded-[2rem] border border-white/10 shadow-2xl">
         <div className="relative w-full md:w-[500px]">
-          <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-blue-400" size={20} />
+          <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-blue-500" size={20} />
           <input 
             type="text"
             placeholder="Search by name or email..."
-            className="w-full pl-14 pr-6 py-4 bg-slate-900/50 border border-slate-700 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-white placeholder:text-slate-500 font-medium"
+            className="w-full pl-14 pr-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-white placeholder:text-slate-500 font-medium"
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <button className="flex items-center gap-3 px-10 py-4 bg-blue-600 text-white rounded-2xl text-xs font-black uppercase tracking-[0.2em] hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20">
+        <button className="flex items-center justify-center gap-3 px-10 py-4 bg-blue-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20 w-full md:w-auto">
           <Download size={18} /> Export Data
         </button>
       </div>
 
-      {/* 2. Unified Data Grid Container */}
-      <div className="bg-white rounded-[2rem] border border-slate-200 shadow-xl overflow-hidden transition-all duration-300">
+      {/* 2. Data Grid */}
+      <div className="bg-slate-900/40 backdrop-blur-md border border-white/10 rounded-[2rem] overflow-hidden shadow-2xl transition-all duration-300">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
-            {/* --- Matching Midnight Dark Header --- */}
-            <thead className="bg-[#0F172A] border-b border-slate-800">
+            <thead className="bg-white/[0.03] border-b border-white/10">
               <tr>
-                <th className="px-8 py-6 text-xs font-black text-blue-100/80 uppercase tracking-[0.2em]">
+                <th className="px-8 py-6 text-[10px] font-black text-blue-400 uppercase tracking-[0.2em]">
                   <div className="flex items-center gap-2">
-                    <User size={14} className="text-blue-400" /> Team Member
+                    <User size={14} /> Team Member
                   </div>
                 </th>
-                <th className="px-8 py-6 text-xs font-black text-blue-100/80 uppercase tracking-[0.2em]">
+                <th className="px-8 py-6 text-[10px] font-black text-blue-400 uppercase tracking-[0.2em]">
                   <div className="flex items-center gap-2">
-                    <Calendar size={14} className="text-blue-400" /> Session Timeline
+                    <Calendar size={14} /> Session Timeline
                   </div>
                 </th>
-                <th className="px-8 py-6 text-xs font-black text-blue-100/80 uppercase tracking-[0.2em]">
+                <th className="px-8 py-6 text-[10px] font-black text-blue-400 uppercase tracking-[0.2em]">
                   <div className="flex items-center gap-2">
-                    <Timer size={14} className="text-blue-400" /> Duration
+                    <Timer size={14} /> Duration
                   </div>
                 </th>
-                <th className="px-8 py-6 text-xs font-black text-blue-100/80 uppercase tracking-[0.2em] text-right">Activity Status</th>
+                <th className="px-8 py-6 text-[10px] font-black text-blue-400 uppercase tracking-[0.2em] text-right">Activity Status</th>
               </tr>
             </thead>
 
-            {/* --- Matching Body Style --- */}
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-white/5">
               {filteredLogs.map((log) => (
-                <tr key={log._id} className="group hover:bg-blue-50/40 transition-colors duration-200">
+                <tr key={log._id} className="group hover:bg-white/[0.02] transition-colors duration-200">
                   
                   {/* Employee Info Cell */}
                   <td className="px-8 py-6">
                     <div className="flex items-center gap-4">
-                      <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-slate-800 to-blue-900 flex items-center justify-center text-white text-lg font-bold shadow-lg shadow-blue-900/20 ring-2 ring-white">
+                      <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center text-white text-sm font-bold shadow-inner">
                         {log.employeeId.name?.charAt(0) || "U"}
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-base font-bold text-slate-900 leading-none mb-1 group-hover:text-blue-700 transition-colors">
+                        <span className="text-sm font-bold text-white group-hover:text-blue-400 transition-colors">
                           {log.employeeId.name || "Unknown User"}
                         </span>
-                        <span className="text-sm text-slate-500 font-medium flex items-center gap-1.5">
-                          <Mail size={12} className="text-blue-400" /> {log.employeeId.email}
+                        <span className="text-[11px] text-slate-500 font-medium flex items-center gap-1.5 mt-0.5">
+                          <Mail size={10} className="text-blue-500" /> {log.employeeId.email}
                         </span>
                       </div>
                     </div>
@@ -107,16 +105,16 @@ const AdminAttendanceView = () => {
 
                   {/* Timeline Cell */}
                   <td className="px-8 py-6">
-                    <div className="flex flex-col gap-2">
-                       <span className="inline-flex w-fit px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-wider border border-slate-200">
+                    <div className="flex flex-col gap-1.5">
+                       <span className="inline-flex w-fit px-2 py-0.5 rounded-md bg-white/5 text-slate-400 text-[9px] font-black uppercase tracking-widest border border-white/5">
                         {new Date(log.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                       </span>
-                      <div className="flex items-center gap-2 text-sm font-bold text-slate-600">
-                        <span className="text-blue-600">
+                      <div className="flex items-center gap-2 text-xs font-bold text-slate-300">
+                        <span className="text-blue-400">
                           {new Date(log.checkIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
-                        <ArrowRightLeft size={12} className="text-slate-300" />
-                        <span className="text-blue-600">
+                        <ArrowRightLeft size={10} className="text-slate-600" />
+                        <span className="text-blue-400">
                           {log.checkOut ? new Date(log.checkOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "---"}
                         </span>
                       </div>
@@ -125,28 +123,26 @@ const AdminAttendanceView = () => {
 
                   {/* Work Duration Cell */}
                   <td className="px-8 py-6">
-                    <div className="flex flex-col gap-2">
-                      <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full w-fit border ring-1 ring-inset ${
-                        log.workHours >= 8 
-                        ? 'bg-emerald-50 text-emerald-700 border-emerald-100 ring-emerald-600/10' 
-                        : 'bg-amber-50 text-amber-700 border-amber-100 ring-amber-600/10'
-                      }`}>
-                        <span className={`h-1.5 w-1.5 rounded-full ${log.workHours >= 8 ? 'bg-emerald-500' : 'bg-amber-500'}`} />
-                        <span className="text-xs font-black uppercase tracking-tighter">{log.workHours.toFixed(1)}h Logged</span>
-                      </div>
+                    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg w-fit border ${
+                      log.workHours >= 8 
+                      ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
+                      : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                    }`}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${log.workHours >= 8 ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                      <span className="text-[10px] font-black uppercase tracking-wider">{log.workHours.toFixed(1)}h Logged</span>
                     </div>
                   </td>
 
                   {/* Status Cell */}
                   <td className="px-8 py-6 text-right">
                     {!log.checkOut ? (
-                      <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 text-blue-700 text-[10px] font-black uppercase tracking-widest border border-blue-100 shadow-sm animate-pulse">
-                        <span className="h-2 w-2 rounded-full bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.6)]"></span>
+                      <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-500/10 text-blue-400 text-[10px] font-black uppercase tracking-widest border border-blue-500/20 animate-pulse">
+                        <span className="h-1.5 w-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]"></span>
                         Active
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-50 text-slate-500 text-[10px] font-black uppercase tracking-widest border border-slate-100">
-                        <span className="h-2 w-2 rounded-full bg-slate-400"></span>
+                      <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 text-slate-500 text-[10px] font-black uppercase tracking-widest border border-white/5">
+                        <span className="h-1.5 w-1.5 rounded-full bg-slate-600"></span>
                         Finished
                       </span>
                     )}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import api from '@/api/axios';
-import { Calendar, Clock, BarChart3, TrendingUp, Info } from 'lucide-react';
+import {Clock, BarChart3, TrendingUp, Info } from 'lucide-react';
 
 interface AttendanceRecord {
   _id: string;

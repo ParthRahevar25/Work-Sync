@@ -2,38 +2,50 @@ import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Lock, Mail } from "lucide-react";
+import { useState } from "react";
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    setLoading(true);
+    
     const email = e.target.email.value;
     const password = e.target.password.value;
 
     try {
+      // 🔒 The cookie is set automatically by the browser here
       const res = await api.post("/auth/login", { email, password });
-      login(res.data.token, res.data.user);
+      
+      // ✅ We only pass user data now, no token!
+      login(res.data.user); 
+      
       navigate("/dashboard");
-    } catch (err) {
-      alert("Invalid credentials. Please try again.");
+    } catch (err: any) {
+      alert(err.response?.data?.error || "Invalid credentials. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen flex">
-      {/* Left Side: Visual Panel (Industry Standard) */}
-      <div className="hidden lg:flex w-1/2 bg-blue-600 justify-center items-center p-12 relative overflow-hidden">
+     {/* Left Side: Visual Panel */}
+      <div className="hidden lg:flex w-1/2 bg-[#0F172A] justify-center items-center p-12 relative overflow-hidden">
         <div className="relative z-10 text-white max-w-md">
-          <h1 className="text-5xl font-extrabold mb-6 tracking-tight">WorkSync HR</h1>
-          <p className="text-blue-100 text-lg leading-relaxed">
-            The all-in-one platform for attendance, leave management, and employee performance tracking.
+          <div className="h-1 w-12 bg-blue-500 mb-6 rounded-full"></div>
+          <h1 className="text-6xl font-black mb-6 tracking-tighter uppercase">
+            Work<span className="text-blue-500">Sync</span>
+          </h1>
+          <p className="text-slate-400 text-lg font-medium leading-relaxed uppercase tracking-widest opacity-70">
+            Enterprise Human Resource Management System
           </p>
         </div>
-        {/* Decorative Circles */}
-        <div className="absolute top-0 left-0 w-64 h-64 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 -translate-x-1/2 -translate-y-1/2"></div>
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 translate-x-1/4 translate-y-1/4"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-600/10 to-transparent"></div>
+        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-blue-600 rounded-full filter blur-[120px] opacity-20"></div>
       </div>
 
       {/* Right Side: Login Form */}

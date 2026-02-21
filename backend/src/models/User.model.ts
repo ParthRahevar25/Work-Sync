@@ -17,7 +17,12 @@ export interface IUser extends Document {
 
 const userSchema = new Schema<IUser>({
   email: { type: String, unique: true, required: true },
-  password: { type: String, required: true },
+  password: { 
+    type: String, 
+    required: true, 
+    select: false //Prevent password from being returned in queries by default
+  },
+  name: { type: String, required: true }, // Added as you're using it in onboarding
   role: { type: String, enum: ["admin", "manager", "employee"], default: "employee" },
   employeeId: { type: mongoose.Schema.Types.ObjectId, ref: "Employee" },
   isActive: { type: Boolean, default: true },
@@ -25,8 +30,16 @@ const userSchema = new Schema<IUser>({
     casual: { type: Number, default: 12 },
     sick: { type: Number, default: 6 },
     paid: { type: Number, default: 6 },
-    // Total = 24
   }
-}, { timestamps: true });
+}, { 
+  timestamps: true,
+  // Automatically strips password when converting to JSON (for API responses)
+  toJSON: {
+    transform: (doc, ret) => {
+      delete ret.password;
+      return ret;
+    }
+  }
+});
 
 export default mongoose.model<IUser>("User", userSchema);
