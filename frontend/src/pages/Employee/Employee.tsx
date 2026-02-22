@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
-import api from "../../api/axios";
+import api from "@/api/axios";
 import { UserPlus, BadgeCheck, X, Loader2 } from "lucide-react";
+import EmployeeDetailsDrawer from "@/components/EmployeeDetails";
+import { useNavigate } from "react-router-dom";
 
 export default function Employees() {
   const [employees, setEmployees] = useState<any[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const [empData, setEmpData] = useState({
     employeeCode: "",
@@ -144,7 +148,8 @@ export default function Employees() {
                   filteredEmployees.map((emp) => (
                     <tr
                       key={emp._id}
-                      className="group hover:bg-white/[0.02] transition-colors"
+                      onClick={() => setSelectedId(emp._id)}
+                      className="group hover:bg-white/[0.02] transition-colors cursor-pointer"
                     >
                       <td className="px-8 py-5">
                         <div className="flex items-center gap-4">
@@ -172,10 +177,34 @@ export default function Employees() {
                           {emp.role}
                         </span>
                       </td>
-                      <td className="px-8 py-5 text-right">
+                      {/* <td className="px-8 py-5 text-right">
                         <button className="text-[10px] font-black text-slate-400 hover:text-white uppercase tracking-widest transition-colors">
                           View File
                         </button>
+                      </td> */}
+                      <td className="px-8 py-5 text-right">
+                        <div className="flex justify-end gap-4 items-center">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedId(emp._id);
+                            }}
+                            className="text-[10px] font-black text-slate-400 hover:text-blue-400 uppercase tracking-widest transition-colors"
+                          >
+                            View
+                          </button>
+
+
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevents opening the drawer
+                              navigate(`/employees/edit/${emp._id}`); // Adjust this route to match your App.tsx
+                            }}
+                            className="px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-[10px] font-black text-white uppercase tracking-widest transition-all"
+                          >
+                            Complete Profile
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -285,7 +314,7 @@ export default function Employees() {
                   <input
                     required
                     type="email"
-                    placeholder="e.g. john@company.com"
+                    placeholder="e.g. user@worksync.com"
                     value={empData.email}
                     className={inputClass}
                     onChange={(e) =>
@@ -345,6 +374,12 @@ export default function Employees() {
             </form>
           </div>
         </div>
+      )}
+      {selectedId && (
+        <EmployeeDetailsDrawer
+          employeeId={selectedId}
+          onClose={() => setSelectedId(null)}
+        />
       )}
     </div>
   );

@@ -3,7 +3,7 @@ import api from "@/api/axios";
 import { useAuth } from "@/context/AuthContext";
 import AdminLeaveApproval from "@/components/AdminLeaveApproval";
 import MyLeaveHistory from "@/components/MyLeaveHistory";
-import { Calendar, Info, PieChart, Send, ShieldCheck } from "lucide-react";
+import { Calendar, Info, PieChart, Send } from "lucide-react";
 
 const LeavePage = () => {
   const { user } = useAuth();

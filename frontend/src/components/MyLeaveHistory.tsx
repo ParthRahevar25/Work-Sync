@@ -1,6 +1,6 @@
 import {useEffect, useState, type JSX } from "react";
 import api from "@/api/axios";
-import { Activity,Clock, CheckCircle2, XCircle, CalendarDays, ChevronRight } from "lucide-react";
+import { Activity,Clock, CheckCircle2, XCircle, CalendarDays } from "lucide-react";
 
 interface MyLeaveHistoryProps {
   refresh: number;

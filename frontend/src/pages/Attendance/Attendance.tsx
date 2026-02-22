@@ -2,10 +2,12 @@ import { useAuth } from "@/context/AuthContext";
 import AttendanceCard from "@/components/AttendanceCard";
 import EmployeeAttendanceHistory from "@/components/EmployeeAttendanceHistory";
 import AdminAttendanceView from "@/components/AdminAttendanceView";
+import { useState } from "react";
 
 const Attendance = () => {
   const { user } = useAuth(); 
-
+  const [refresh, setRefresh] = useState(0);
+const triggerRefresh = () => setRefresh((prev) => prev + 1);
   return (
     <div className="relative z-10 p-6 lg:p-10 min-h-screen">
       <div className="max-w-[1600px] mx-auto space-y-12 animate-in fade-in duration-700">
@@ -28,12 +30,12 @@ const Attendance = () => {
           
           {/* Left Column: Timer (Check-in Card) */}
           <div className="lg:col-span-4 flex flex-col">
-            <AttendanceCard />
+            <AttendanceCard onActionSuccess={triggerRefresh}/>
           </div>
 
           {/* Right Column: Personal History Logs */}
           <div className="lg:col-span-8 flex flex-col">
-            <EmployeeAttendanceHistory />
+            <EmployeeAttendanceHistory refresh={refresh} />
           </div>
         </div>
 

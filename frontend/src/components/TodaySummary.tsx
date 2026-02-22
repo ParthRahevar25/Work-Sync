@@ -131,7 +131,7 @@ const SummaryCard = ({
   const t = themes[color] || themes.blue;
 
   return (
-    <div className="group relative bg-slate-900/40 backdrop-blur-md rounded-[2.5rem] p-8 border border-white/10 shadow-2xl hover:border-white/20 hover:-translate-y-2 transition-all duration-500 ease-out overflow-hidden">
+    <div className="group relative bg-slate-900/40 backdrop-blur-sm rounded-[2.5rem] p-8 border border-white/10 shadow-2xl hover:border-white/20 hover:-translate-y-2 transition-all duration-500 ease-out overflow-hidden">
       <div
         className={`absolute -right-6 -top-6 w-32 h-30 rounded-full blur-3xl opacity-0 group-hover:opacity-40 transition-opacity duration-700 ${t.bg}`}
       ></div>

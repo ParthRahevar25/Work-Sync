@@ -1,6 +1,15 @@
 import api from "@/api/axios";
 import { useEffect, useState } from "react";
-import { Check, X, Mail, Calendar, User, Info, AlertCircle, ArrowRightLeft } from "lucide-react";
+import {
+  Check,
+  X,
+  Mail,
+  Calendar,
+  User,
+  Info,
+  AlertCircle,
+  ArrowRightLeft,
+} from "lucide-react";
 
 interface LeaveRequest {
   _id: string;
@@ -34,8 +43,8 @@ const AdminLeaveApproval = () => {
     const fetchLeaves = async () => {
       try {
         const res = await api.get("/leaves/all");
-        const sorted = res.data.sort((a: any, b: any) => 
-          a.status === 'Pending' ? -1 : 1
+        const sorted = res.data.sort((a: any) =>
+          a.status === "Pending" ? -1 : 1,
         );
         setRequests(sorted);
       } catch (err) {
@@ -45,13 +54,18 @@ const AdminLeaveApproval = () => {
     fetchLeaves();
   }, []);
 
-  const updateStatus = async (id: string, newStatus: "Approved" | "Rejected") => {
+  const updateStatus = async (
+    id: string,
+    newStatus: "Approved" | "Rejected",
+  ) => {
     setProcessingId(id);
     try {
       await api.put(`/leaves/update/${id}`, { status: newStatus });
-      setRequests(prev => prev.map(req => 
-        req._id === id ? { ...req, status: newStatus } : req
-      ));
+      setRequests((prev) =>
+        prev.map((req) =>
+          req._id === id ? { ...req, status: newStatus } : req,
+        ),
+      );
     } catch (err) {
       alert("Action failed");
     } finally {
@@ -81,14 +95,21 @@ const AdminLeaveApproval = () => {
                   <Info size={14} /> Justification
                 </div>
               </th>
-              <th className="px-8 py-6 text-[10px] font-black text-blue-400 uppercase tracking-[0.2em]">Status</th>
-              <th className="px-8 py-6 text-[10px] font-black text-blue-400 uppercase tracking-[0.2em] text-right">Decision</th>
+              <th className="px-8 py-6 text-[10px] font-black text-blue-400 uppercase tracking-[0.2em]">
+                Status
+              </th>
+              <th className="px-8 py-6 text-[10px] font-black text-blue-400 uppercase tracking-[0.2em] text-right">
+                Decision
+              </th>
             </tr>
           </thead>
 
           <tbody className="divide-y divide-white/5">
             {requests.map((req) => (
-              <tr key={req._id} className="group hover:bg-white/[0.02] transition-colors duration-200">
+              <tr
+                key={req._id}
+                className="group hover:bg-white/[0.02] transition-colors duration-200"
+              >
                 {/* 1. Employee Info */}
                 <td className="px-8 py-6">
                   <div className="flex items-center gap-4">
@@ -100,7 +121,8 @@ const AdminLeaveApproval = () => {
                         {req.employeeId?.name}
                       </span>
                       <span className="text-[11px] text-slate-500 font-medium flex items-center gap-1.5 mt-0.5">
-                        <Mail size={10} className="text-blue-500" /> {req.employeeId?.email}
+                        <Mail size={10} className="text-blue-500" />{" "}
+                        {req.employeeId?.email}
                       </span>
                     </div>
                   </div>
@@ -113,9 +135,13 @@ const AdminLeaveApproval = () => {
                       {req.type}
                     </span>
                     <div className="flex items-center gap-2 text-xs font-bold text-slate-300">
-                      <span className="text-blue-400">{new Date(req.startDate).toLocaleDateString()}</span>
+                      <span className="text-blue-400">
+                        {new Date(req.startDate).toLocaleDateString()}
+                      </span>
                       <ArrowRightLeft size={10} className="text-slate-600" />
-                      <span className="text-blue-400">{new Date(req.endDate).toLocaleDateString()}</span>
+                      <span className="text-blue-400">
+                        {new Date(req.endDate).toLocaleDateString()}
+                      </span>
                     </div>
                   </div>
                 </td>
@@ -131,8 +157,12 @@ const AdminLeaveApproval = () => {
 
                 {/* 4. Status */}
                 <td className="px-8 py-6">
-                  <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-black border uppercase tracking-widest ${getStatusStyle(req.status)}`}>
-                    <span className={`h-1.5 w-1.5 rounded-full ${req.status === 'Approved' ? 'bg-emerald-500' : req.status === 'Rejected' ? 'bg-rose-500' : 'bg-amber-500 animate-pulse'}`} />
+                  <span
+                    className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-black border uppercase tracking-widest ${getStatusStyle(req.status)}`}
+                  >
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${req.status === "Approved" ? "bg-emerald-500" : req.status === "Rejected" ? "bg-rose-500" : "bg-amber-500 animate-pulse"}`}
+                    />
                     {req.status}
                   </span>
                 </td>
@@ -141,7 +171,7 @@ const AdminLeaveApproval = () => {
                 <td className="px-8 py-6 text-right">
                   {req.status === "Pending" ? (
                     <div className="flex justify-end items-center gap-2">
-                      <button 
+                      <button
                         disabled={processingId === req._id}
                         onClick={() => updateStatus(req._id, "Approved")}
                         className="p-2.5 text-emerald-400 hover:bg-emerald-500/10 rounded-xl transition-all border border-transparent hover:border-emerald-500/20"
@@ -149,7 +179,7 @@ const AdminLeaveApproval = () => {
                       >
                         <Check size={20} className="stroke-[3]" />
                       </button>
-                      <button 
+                      <button
                         disabled={processingId === req._id}
                         onClick={() => updateStatus(req._id, "Rejected")}
                         className="p-2.5 text-rose-400 hover:bg-rose-500/10 rounded-xl transition-all border border-transparent hover:border-rose-500/20"

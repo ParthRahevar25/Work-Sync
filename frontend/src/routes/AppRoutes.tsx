@@ -10,7 +10,7 @@ import Attendance from "@/pages/Attendance/Attendance";
 import LeavePage from "@/pages/Leaves/Leave";
 import AdminRoute from "./AdminRoute";
 import Particles from "@/components/Particles";
-import WorkSyncBackground from "@/components/Bg";
+import EditEmployee from "@/pages/Employee/EditEmployees";
 
 const AppRoutes = () => {
   const { user, loading } = useAuth();
@@ -23,9 +23,9 @@ const AppRoutes = () => {
   }
   return (
     <BrowserRouter>
-      {/* 1. Main Wrapper (Must be Black) */}
+      {/* 1. Main Wrapper */}
       <div className="relative flex h-screen w-full bg-[#030712] overflow-hidden">
-        {/* 2. GLOBAL BACKGROUND LAYER (Shows on every page) */}
+        {/* 2. GLOBAL BACKGROUND LAYER  */}
         <div className="fixed inset-0 z-0 pointer-events-none">
           <Particles
             particleColors={["#3b82f6", "#ffffff"]}
@@ -38,31 +38,27 @@ const AppRoutes = () => {
             disableRotation={false}
           />
           {/* Subtle dark gradient overlay to keep text readable */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#030712]/20 to-[#030712]/80" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#030712]/20 to-[#030712]/80" />
         </div>
         {/* <div className="fixed inset-0 z-0 pointer-events-none">
           <WorkSyncBackground /> */}
-
-          {/* Keep your gradient overlay - it makes the particles look integrated */}
-          {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#030712]/20 to-[#030712]/80" />
+        {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#030712]/20 to-[#030712]/80" />
         </div> */}
 
-        {/* 3. Sidebar (Stays fixed on the left) */}
+        {/* 3. Sidebar */}
         {user && (
           <div className="relative z-40 shrink-0">
             <Sidebar />
           </div>
         )}
 
-        {/* 4. CONTENT AREA (Scrolls independently) */}
+        {/* 4. CONTENT AREA  */}
         <div className="relative z-10 flex-1 h-full overflow-y-auto">
           <Routes>
             <Route
               path="/"
               element={user ? <Navigate to="/dashboard" /> : <Login />}
             />
-
-            {/* All these pages will now have the particles behind them! */}
             <Route
               path="/dashboard"
               element={
@@ -104,6 +100,14 @@ const AppRoutes = () => {
               }
             />
 
+            <Route
+              path="/employees/edit/:id"
+              element={
+                <AdminRoute>
+                  <EditEmployee />
+                </AdminRoute>
+              }
+            />
             <Route
               path="*"
               element={<Navigate to={user ? "/dashboard" : "/"} />}

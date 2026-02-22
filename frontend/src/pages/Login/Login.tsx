@@ -1,7 +1,7 @@
 import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { Lock, Mail } from "lucide-react";
+import { Loader2, Lock, Mail } from "lucide-react";
 import { useState } from "react";
 
 export default function Login() {
@@ -12,20 +12,22 @@ export default function Login() {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
-    
+
     const email = e.target.email.value;
     const password = e.target.password.value;
 
     try {
       // 🔒 The cookie is set automatically by the browser here
       const res = await api.post("/auth/login", { email, password });
-      
+
       // ✅ We only pass user data now, no token!
-      login(res.data.user); 
-      
+      login(res.data.user);
+
       navigate("/dashboard");
     } catch (err: any) {
-      alert(err.response?.data?.error || "Invalid credentials. Please try again.");
+      alert(
+        err.response?.data?.error || "Invalid credentials. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -33,7 +35,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex">
-     {/* Left Side: Visual Panel */}
+      {/* Left Side: Visual Panel */}
       <div className="hidden lg:flex w-1/2 bg-[#0F172A] justify-center items-center p-12 relative overflow-hidden">
         <div className="relative z-10 text-white max-w-md">
           <div className="h-1 w-12 bg-blue-500 mb-6 rounded-full"></div>
@@ -53,16 +55,23 @@ export default function Login() {
         <div className="w-full max-w-md space-y-8">
           <div className="text-center lg:text-left">
             <h2 className="text-3xl font-bold text-gray-900">Welcome Back</h2>
-            <p className="mt-2 text-gray-500">Please enter your details to sign in</p>
+            <p className="mt-2 text-gray-500">
+              Please enter your details to sign in
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-6">
             <div className="space-y-4">
               {/* Email Field */}
               <div className="relative">
-                <label className="text-sm font-semibold text-gray-700 block mb-1">Work Email</label>
+                <label className="text-sm font-semibold text-gray-700 block mb-1">
+                  Work Email
+                </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                  <Mail
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                    size={18}
+                  />
                   <input
                     name="email"
                     type="email"
@@ -76,11 +85,21 @@ export default function Login() {
               {/* Password Field */}
               <div className="relative">
                 <div className="flex justify-between mb-1">
-                  <label className="text-sm font-semibold text-gray-700">Password</label>
-                  <a href="#" className="text-sm font-medium text-blue-600 hover:text-blue-500">Forgot?</a>
+                  <label className="text-sm font-semibold text-gray-700">
+                    Password
+                  </label>
+                  <a
+                    href="#"
+                    className="text-sm font-medium text-blue-600 hover:text-blue-500"
+                  >
+                    Forgot?
+                  </a>
                 </div>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                  <Lock
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                    size={18}
+                  />
                   <input
                     name="password"
                     type="password"
@@ -91,9 +110,18 @@ export default function Login() {
                 </div>
               </div>
             </div>
-
-            <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-200 transition-all transform active:scale-[0.98]">
-              Sign In
+            <button
+              disabled={loading}
+              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-200 transition-all flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="animate-spin" size={18} />
+                  Signing in...
+                </>
+              ) : (
+                "Sign In"
+              )}
             </button>
           </form>
 

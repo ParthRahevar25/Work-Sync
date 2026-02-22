@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Employee from "../models/Employee.model";
+import User from "../models/User.model";
 
 // Create new employee (Admin only)
 export const createEmployee = async (req: Request, res: Response) => {
@@ -41,16 +42,26 @@ export const getAllEmployees = async (req: Request, res: Response) => {
 };
 
 // Get single employee (Admin / Manager / Self)
+
 export const getEmployeeById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const employee = await Employee.findById(id);
+    
+    const employee = await Employee.findById(id)
+      .populate("managerId", "name designation") // Get manager info
+      .lean(); // Faster, returns plain JSON
+
     if (!employee) return res.status(404).json({ error: "Employee not found" });
 
-    res.json(employee);
+    // Link the user account status to the employee data
+    const userAccount = await User.findOne({ employeeId: id }).select("isActive role");
+
+    res.json({
+      ...employee,
+      accountInfo: userAccount // Now we know if they are active/deactive too
+    });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to fetch employee" });
+    res.status(500).json({ error: "Failed to fetch 360 view" });
   }
 };
 
