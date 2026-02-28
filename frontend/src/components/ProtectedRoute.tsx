@@ -1,15 +1,21 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { Loader2 } from "lucide-react";
 
-export default function ProtectedRoute({ children }: any) {
-  const { user } = useAuth();
+export default function ProtectedRoute({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { user, loading } = useAuth();
 
-  // 1. If not logged in at all, go to login
+  if (loading)
+    return <Loader2 className="animate-spin mx-auto mt-20" size={48} />;
+
+  // 2. Only if loading is done and user is still null, redirect.
   if (!user) {
-    return <Navigate to="/" />;
+    return <Navigate to="/" replace />;
   }
 
-  // 2. Allow any logged-in user to see the children
-  // We handle specific role-based UI inside the components themselves
-  return children;
+  return <>{children}</>;
 }

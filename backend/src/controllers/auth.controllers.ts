@@ -8,13 +8,17 @@ const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 // 1. Get Current User Data
 export const getMe = async (req: any, res: Response) => {
   try {
-    const user = await User.findById(req.user.userId)
-      .populate("employeeId"); 
+    // The middleware 'requireRole' already fetched the user and 
+    // attached it to 'req.user'. No need to query findById again!
     
-    if (!user) return res.status(404).json({ error: "User not found" });
-    res.json(user);
+    if (!req.user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Just return the user that was already populated in the middleware
+    res.json(req.user); 
   } catch (err) {
-    console.error(err);
+    console.error("getMe Error:", err);
     res.status(500).json({ error: "Server error" });
   }
 };
@@ -24,7 +28,8 @@ export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({ email }).select("+password");
+    const user = await User.findOne({ email }).select("+password")
+    .populate("employeeId");
 
     if (!user) {
       return res.status(401).json({ error: "Invalid email or password" });

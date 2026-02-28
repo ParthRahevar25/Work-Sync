@@ -9,7 +9,8 @@ import attendanceRoutes from "./routes/attendance.route";
 import userRoutes from "./routes/user.route";
 import leaveRoutes from "./routes/leave.route";
 import cookieParser from "cookie-parser";
-import dashboardRoutes from "./routes/summary.route"; // 👈 Dashboard summary route
+import dashboardRoutes from "./routes/summary.route";
+import aiRoutes from "./ai/ai.route";
 
 dotenv.config();
 connectDB();
@@ -31,6 +32,7 @@ app.use("/api/attendance", attendanceRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/leaves", leaveRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/ai", aiRoutes);
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
 });

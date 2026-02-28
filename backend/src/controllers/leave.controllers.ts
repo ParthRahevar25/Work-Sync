@@ -6,7 +6,8 @@ import User from "../models/User.model";
 export const applyLeave = async (req: any, res: Response) => {
   try {
     const { type, startDate, endDate, reason } = req.body;
-    const employeeId = req.user.userId;
+  
+    const employeeId = req.user._id;
 
     // 1. Calculate requested days
     const start = new Date(startDate);
@@ -54,7 +55,7 @@ export const getAllLeaves = async (req: Request, res: Response) => {
 
 export const getMyLeaves = async (req: any, res: Response) => {
   try {
-    const employeeId = req.user.userId; // Extracted from JWT middleware
+    const employeeId = req.user._id;
     const leaves = await Leave.find({ employeeId }).sort({ appliedAt: -1 });
     res.json(leaves);
   } catch (error) {

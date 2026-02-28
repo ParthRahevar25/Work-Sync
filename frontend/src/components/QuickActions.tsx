@@ -19,12 +19,12 @@ const actions = [
     path: "/attendance" 
   },
   { 
-    title: "Nexus AI", 
+    title: "Work Sync AI", 
     desc: "Chat with HR Assistant",
     icon: <Bot size={28} />, 
     color: "purple",
     glow: "group-hover:shadow-purple-500/40",
-    path: "/ai-chat" 
+    path: "/work-sync-ai" 
   },
   { 
     title: "Settings", 

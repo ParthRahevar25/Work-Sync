@@ -11,6 +11,7 @@ import LeavePage from "@/pages/Leaves/Leave";
 import AdminRoute from "./AdminRoute";
 import Particles from "@/components/Particles";
 import EditEmployee from "@/pages/Employee/EditEmployees";
+import WorkSyncAI from "@/pages/WorkSyncAi";
 
 const AppRoutes = () => {
   const { user, loading } = useAuth();
@@ -106,6 +107,14 @@ const AppRoutes = () => {
                 <AdminRoute>
                   <EditEmployee />
                 </AdminRoute>
+              }
+            />
+            <Route
+              path="/work-sync-ai"
+              element={
+                <ProtectedRoute>
+                  <WorkSyncAI />
+                </ProtectedRoute>
               }
             />
             <Route

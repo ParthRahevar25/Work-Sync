@@ -2,9 +2,9 @@ import { Request, Response } from "express";
 import Attendance from "../models/Attendence.model";
 
 // 🔹 Mark attendance (Check-In / Check-Out Toggle)
-export const markAttendance = async (req: Request, res: Response) => {
+export const markAttendance = async (req:any, res: Response) => {
   try {
-    const employeeId = (req as any).user.userId;
+    const employeeId = req.user._id;
     const { type } = req.body; 
     const today = new Date().setHours(0, 0, 0, 0);
 
@@ -36,9 +36,9 @@ export const markAttendance = async (req: Request, res: Response) => {
 };
 
 // 🔹 Get own attendance (The missing function 1)
-export const getMyAttendance = async (req: Request, res: Response) => {
+export const getMyAttendance = async (req: any, res: Response) => {
   try {
-    const employeeId = (req as any).user.userId;
+    const employeeId = req.user._id;
     const records = await Attendance.find({ employeeId }).sort({ date: -1 });
     res.json(records);
   } catch (err) {
