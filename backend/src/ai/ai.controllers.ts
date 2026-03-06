@@ -5,47 +5,69 @@ import Employee from "../models/Employee.model";
 
 export const chatWithAI = async (req: any, res: Response) => {
   try {
-    const user = req.user; // This contains email, role, AND leaveBalance
+    const user = req.user; 
     const { message } = req.body;
 
-    // Fetch employee for personal touch (name/designation)
-    const employeeData = await Employee.findById(user.employeeId);
+    // Correctly handle the populated employeeId from your new middleware
+    const empId = user.employeeId._id || user.employeeId;
+    const employeeData = await Employee.findById(empId);
 
     const context = {
       userId: user?._id,
       role: user?.role,
-      name: employeeData?.name 
+      name: employeeData?.name || "Employee"
     };
 
     const aiResponse = await generateAIResponse(message, context);
 
+    // ACTION: GET BALANCE
     if (aiResponse.action === "GET_LEAVE_BALANCE") {
-      // 1. Get the balance from the USER object where you defined it
       const lb = user?.leaveBalance; 
       const total = (lb?.casual || 0) + (lb?.sick || 0) + (lb?.paid || 0);
-
       return res.json({
-        message: `Total balance: ${total} days (Casual: ${lb?.casual}, Sick: ${lb?.sick}, Paid: ${lb?.paid})`,
-        balanceBreakdown: {
-          casual: lb?.casual || 0,
-          sick: lb?.sick || 0,
-          paid: lb?.paid || 0,
-          total
-        }
+        message: `You have ${total} total leaves remaining.`,
+        balanceBreakdown: { casual: lb?.casual || 0, sick: lb?.sick || 0, paid: lb?.paid || 0, total }
       });
     }
 
+    // ACTION: APPLY LEAVE
+    if (aiResponse.action === "APPLY_LEAVE") {
+  const { startDate, endDate, type, reason } = aiResponse.data;
+
+  const newLeave = await Leave.create({
+    // ⚡ THE FIX: Use the User ID (_id), not the employeeId object
+    employeeId: user._id, 
+    startDate: new Date(startDate),
+    endDate: new Date(endDate),
+    type: type || "casual",
+    reason: reason || "Applied via Nexus AI",
+    status: "pending",
+  });
+
+  // Populate immediately so the response back to the AI also has the name
+  const populatedLeave = await newLeave.populate("employeeId", "name email");
+
+  return res.json({
+    message: `Done! I've submitted your request.`,
+    leave: populatedLeave,
+    action: "APPLY_LEAVE"
+  });
+}
+
+    // ACTION: GET HISTORY
     if (aiResponse.action === "GET_MY_LEAVES") {
-      const leaves = await Leave.find({ employeeId: user.employeeId });
+      const leaves = await Leave.find({ employeeId: empId }).sort({ startDate: -1 });
       return res.json({
-        message: `I found ${leaves.length} leave applications.`,
+        message: `I found ${leaves.length} leave applications in your records.`,
         leaves,
       });
     }
 
+    // DEFAULT: General Chat
     return res.json(aiResponse);
+
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "WorkSync AI Sync Failed" });
+    console.error("AI Controller Error:", err);
+    res.status(500).json({ error: "WorkSync AI is currently offline. Please try again later." });
   }
 };

@@ -8,44 +8,45 @@ export interface AIResponse {
   data?: any;
 }
 
-export async function generateAIResponse(
-  prompt: string,
-  context: any
-): Promise<AIResponse> {
+export async function generateAIResponse(prompt: string, context: any): Promise<AIResponse> {
   const systemPrompt = `
-You are WorkSync AI, an assistant for employee management.
+You are WorkSync AI, an HR assistant. 
+Current Date: ${new Date().toISOString().split('T')[0]}
 
-You MUST respond in JSON format ONLY:
+CRITICAL: You MUST respond with ONLY a valid JSON object. Do not include any text before or after the JSON.
 
 {
-  "message": "message to show user",
-  "action": "optional action name",
+  "message": "Friendly message",
+  "action": "ACTION_NAME",
   "data": {}
 }
 
-Actions allowed:
-- APPLY_LEAVE
-- GET_LEAVE_BALANCE
-- GET_MY_LEAVES
-- NONE
+Actions:
+- APPLY_LEAVE: data: { "startDate": "YYYY-MM-DD", "endDate": "YYYY-MM-DD", "type": "casual" | "Sick" | "paid", "reason": "string" }
+- GET_LEAVE_BALANCE: no data needed.
+- GET_MY_LEAVES: no data needed.
+- NONE: for general chat.
 
-Context:
-${JSON.stringify(context)}
+Context: Name: ${context.name}, Role: ${context.role}
 `;
 
-  const fullPrompt = systemPrompt + "\nUser: " + prompt;
-
-  const response = await axios.post(OLLAMA_URL, {
-    model: "llama3:8b",
-    prompt: fullPrompt,
-    stream: false,
-  });
-
   try {
-    return JSON.parse(response.data.response);
-  } catch {
+    const response = await axios.post(OLLAMA_URL, {
+      model: "llama3:8b",
+      prompt: systemPrompt + "\nUser: " + prompt,
+      stream: false,
+    });
+
+    let rawResponse = response.data.response.trim();
+    
+    // Remove markdown code blocks if the AI includes them
+    rawResponse = rawResponse.replace(/```json/g, "").replace(/```/g, "").trim();
+
+    return JSON.parse(rawResponse);
+  } catch (error) {
+    console.error("AI Parsing Error. Raw response was:", error);
     return {
-      message: response.data.response,
+      message: "I processed your request but had trouble formatting the data. Could you try again?",
       action: "NONE",
     };
   }

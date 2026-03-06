@@ -29,10 +29,11 @@ const AdminLeaveApproval = () => {
   const [processingId, setProcessingId] = useState<string | null>(null);
 
   const getStatusStyle = (status: string) => {
-    switch (status) {
-      case "Approved":
+    const s = status?.toLowerCase();
+    switch (s) {
+      case "approved":
         return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
-      case "Rejected":
+      case "rejected":
         return "bg-rose-500/10 text-rose-400 border-rose-500/20";
       default:
         return "bg-amber-500/10 text-amber-400 border-amber-500/20";
@@ -169,7 +170,7 @@ const AdminLeaveApproval = () => {
 
                 {/* 5. Actions */}
                 <td className="px-8 py-6 text-right">
-                  {req.status === "Pending" ? (
+                  {req.status.toLowerCase() === "pending" ? (
                     <div className="flex justify-end items-center gap-2">
                       <button
                         disabled={processingId === req._id}
