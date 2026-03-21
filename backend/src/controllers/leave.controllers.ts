@@ -1,107 +1,133 @@
 import { Request, Response } from "express";
+import mongoose from "mongoose";
 import Leave from "../models/Leaves.model";
 import User from "../models/User.model";
+import { createNotification } from "./notification.controllers";
 
-// 🔹 Employee applies for leave
 export const applyLeave = async (req: any, res: Response) => {
   try {
     const { type, startDate, endDate, reason } = req.body;
-  
     const employeeId = req.user._id;
 
-    // 1. Calculate requested days
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const diffTime = Math.abs(end.getTime() - start.getTime());
-    const requestedDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    // Days calculation (inclusive of both endpoints)
+    const start         = new Date(startDate);
+    const end           = new Date(endDate);
+    const requestedDays = Math.ceil(
+      Math.abs(end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
+    ) + 1;
 
-    // 2. Find user and check balance
+    // Balance check
     const user = await User.findById(employeeId);
     if (!user) return res.status(404).json({ error: "User not found" });
 
-    const leaveType = type.toLowerCase() as 'casual' | 'sick' | 'paid';
+    const leaveType      = type.toLowerCase() as "casual" | "sick" | "paid";
     const currentBalance = user.leaveBalance[leaveType];
-
     if (currentBalance < requestedDays) {
-      return res.status(400).json({ 
-        error: `Insufficient balance. You requested ${requestedDays} days but only have ${currentBalance} ${type} leaves left.` 
+      return res.status(400).json({
+        error: `Insufficient balance. You requested ${requestedDays} days but only have ${currentBalance} ${type} leaves left.`,
       });
     }
 
-    // 3. Create request if balance is okay
-    const newLeave = await Leave.create({
-      employeeId,
-      type,
-      startDate,
-      endDate,
-      reason
-    });
+    // Create leave — schema default status is "pending" (lowercase)
+    const newLeave = await Leave.create({ employeeId, type, startDate, endDate, reason });
+
+    // ── Notify all admins + managers ─────────────────────────────────────────
+    const recipients = await User.find(
+      { role: { $in: ["admin", "manager"] }, isActive: true },
+      "_id"
+    );
+    const recipientIds = recipients.map(u => u._id as mongoose.Types.ObjectId);
+
+    if (recipientIds.length) {
+      const fmt = (d: Date) =>
+        d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+
+      await createNotification(
+        recipientIds,
+        "New Leave Request",
+        `${user.name} applied for ${type} leave (${fmt(start)} – ${fmt(end)}). Reason: ${reason}`,
+        "leave_applied"
+      );
+    }
 
     res.status(201).json({ message: "Leave applied successfully", data: newLeave });
-  } catch (error) {
+  } catch (err) {
+    console.error("applyLeave error:", err);
     res.status(500).json({ error: "Failed to apply for leave" });
   }
 };
 
-// 🔹 Admin fetches all leaves to review
-export const getAllLeaves = async (req: Request, res: Response) => {
+export const getAllLeaves = async (_req: Request, res: Response) => {
   try {
-    const leaves = await Leave.find().populate("employeeId", "name email");
+    const leaves = await Leave.find()
+      .populate("employeeId", "name email")
+      .sort({ appliedAt: -1 });
     res.json(leaves);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: "Failed to fetch leaves" });
   }
 };
 
 export const getMyLeaves = async (req: any, res: Response) => {
   try {
-    const employeeId = req.user._id;
-    const leaves = await Leave.find({ employeeId }).sort({ appliedAt: -1 });
+    const leaves = await Leave.find({ employeeId: req.user._id })
+      .sort({ appliedAt: -1 });
     res.json(leaves);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: "Failed to fetch your leave history" });
   }
 };
 
-// 🔹 Admin updates leave status
-export const updateLeaveStatus = async (req: Request, res: Response) => {
+export const updateLeaveStatus = async (req: any, res: Response) => {
   try {
-    const { id } = req.params;
-    const { status } = req.body; // "Approved" or "Rejected"
+    const { id }     = req.params;
+    const { status } = req.body; // frontend sends "Approved" or "Rejected"
 
-    // 1. Find the leave request
-    const leaveRequest = await Leave.findById(id);
-    if (!leaveRequest) return res.status(404).json({ error: "Request not found" });
+    // Normalise → schema stores "approved" / "rejected"
+    const normalised = status.toLowerCase() as "approved" | "rejected";
 
-    // 2. Only process balance deduction if the status is changing to "Approved"
-    if (status === "Approved" && leaveRequest.status !== "Approved") {
-      
-      // Calculate total days (including start and end date)
-      const start = new Date(leaveRequest.startDate);
-      const end = new Date(leaveRequest.endDate);
-      
-      // Formula: (End - Start) / ms_per_day + 1
-      const diffTime = Math.abs(end.getTime() - start.getTime());
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    const leave = await Leave.findById(id).populate("employeeId", "name email");
+    if (!leave) return res.status(404).json({ error: "Request not found" });
 
-      const leaveType = leaveRequest.type.toLowerCase(); // "casual", "sick", or "paid"
+    // Deduct balance only on first approval
+    if (normalised === "approved" && leave.status !== "approved") {
+      const start    = new Date(leave.startDate);
+      const end      = new Date(leave.endDate);
+      const diffDays = Math.ceil(
+        Math.abs(end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
+      ) + 1;
 
-      // 3. Subtract from the specific employee's balance
-      const updatedUser = await User.findByIdAndUpdate(
-        leaveRequest.employeeId,
-        { $inc: { [`leaveBalance.${leaveType}`]: -diffDays } },
-        { new: true }
+      await User.findByIdAndUpdate(
+        leave.employeeId,
+        { $inc: { [`leaveBalance.${leave.type.toLowerCase()}`]: -diffDays } }
       );
-
     }
 
-    // 4. Update the leave request status
-    leaveRequest.status = status;
-    await leaveRequest.save();
+    leave.status = normalised;
+    await leave.save();
 
-    res.json({ message: `Leave ${status} successfully`, data: leaveRequest });
-  } catch (error) {
-    console.error(error);
+    // ── Notify the employee ───────────────────────────────────────────────────
+    const populated  = leave.employeeId as any;
+    const employeeId = populated?._id ?? leave.employeeId;
+    const adminName  = req.user?.name ?? "Admin";
+    const isApproved = normalised === "approved";
+
+    const fmt = (d: Date) =>
+      d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    const dateRange = `${fmt(new Date(leave.startDate))} – ${fmt(new Date(leave.endDate))}`;
+
+    await createNotification(
+      [employeeId as mongoose.Types.ObjectId],
+      isApproved ? "Leave Approved ✓" : "Leave Rejected",
+      isApproved
+        ? `Your ${leave.type} leave (${dateRange}) was approved by ${adminName}.`
+        : `Your ${leave.type} leave (${dateRange}) was not approved by ${adminName}.`,
+      isApproved ? "leave_approved" : "leave_rejected"
+    );
+
+    res.json({ message: `Leave ${normalised} successfully`, data: leave });
+  } catch (err) {
+    console.error("updateLeaveStatus error:", err);
     res.status(500).json({ error: "Failed to update leave status" });
   }
 };

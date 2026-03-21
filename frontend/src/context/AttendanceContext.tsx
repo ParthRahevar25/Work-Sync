@@ -1,65 +1,88 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { useAuth } from "@/context/AuthContext"; // 👈 import this
 
 interface AttendanceContextType {
-  status: 'idle' | 'working' | 'break';
+  status: "idle" | "working" | "break";
   seconds: number;
   startTimer: () => void;
   pauseTimer: () => void;
   stopTimer: () => void;
 }
 
-const AttendanceContext = createContext<AttendanceContextType | undefined>(undefined);
+const AttendanceContext = createContext<AttendanceContextType | undefined>(
+  undefined,
+);
 
-export const AttendanceProvider = ({ children }: { children: React.ReactNode }) => {
-  // 1. Initialize from localStorage safely
-  const [status, setStatus] = useState<'idle' | 'working' | 'break'>(() => {
-    return (localStorage.getItem('attendanceStatus') as 'idle' | 'working' | 'break') || 'idle';
-  });
+export const AttendanceProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  const { user } = useAuth();
 
-  const [seconds, setSeconds] = useState(() => {
-    return Number(localStorage.getItem('attendanceSeconds')) || 0;
-  });
+  const statusKey = user
+    ? `attendanceStatus_${user.userId ?? user.email}`
+    : null;
+  const secondsKey = user
+    ? `attendanceSeconds_${user.userId ?? user.email}`
+    : null;
 
-  // 2. Sync Status to LocalStorage (Only when status changes)
+  const [status, setStatus] = useState<"idle" | "working" | "break">("idle");
+  const [seconds, setSeconds] = useState(0);
+
   useEffect(() => {
-    localStorage.setItem('attendanceStatus', status);
-  }, [status]);
+    if (!statusKey || !secondsKey) {
+      // No user logged in — reset everything
+      setStatus("idle");
+      setSeconds(0);
+      return;
+    }
+    const savedStatus = localStorage.getItem(statusKey) as
+      | "idle"
+      | "working"
+      | "break";
+    const savedSeconds = Number(localStorage.getItem(secondsKey)) || 0;
+    setStatus(savedStatus || "idle");
+    setSeconds(savedSeconds);
+  }, [user?.userId ?? user?.email]);
 
-  // 3. Sync Seconds to LocalStorage (Optimized)
+  // Sync to localStorage (only when user is logged in)
   useEffect(() => {
-    // Only save seconds every 5 seconds to reduce disk I/O, 
-    // or keep it 1s if you prefer absolute precision after a crash.
-    localStorage.setItem('attendanceSeconds', seconds.toString());
-  }, [seconds]);
+    if (statusKey) localStorage.setItem(statusKey, status);
+  }, [status, statusKey]);
 
-  // 4. Global Timer Logic
   useEffect(() => {
-    // FIXED: Use 'number' instead of 'NodeJS.Timeout' for browser compatibility
+    if (secondsKey) localStorage.setItem(secondsKey, seconds.toString());
+  }, [seconds, secondsKey]);
+
+  // Timer logic (unchanged)
+  useEffect(() => {
     let interval: number | undefined;
-
-    if (status === 'working') {
+    if (status === "working") {
       interval = window.setInterval(() => {
         setSeconds((prev) => prev + 1);
       }, 1000);
     }
-
     return () => {
       if (interval) window.clearInterval(interval);
     };
   }, [status]);
 
-  const startTimer = () => setStatus('working');
-  const pauseTimer = () => setStatus('break');
-  
+  const startTimer = () => setStatus("working");
+  const pauseTimer = () => setStatus("break");
+
   const stopTimer = () => {
-    setStatus('idle');
+    setStatus("idle");
     setSeconds(0);
-    localStorage.removeItem('attendanceSeconds');
-    localStorage.removeItem('attendanceStatus');
+
+    if (statusKey) localStorage.removeItem(statusKey);
+    if (secondsKey) localStorage.removeItem(secondsKey);
   };
 
   return (
-    <AttendanceContext.Provider value={{ status, seconds, startTimer, pauseTimer, stopTimer }}>
+    <AttendanceContext.Provider
+      value={{ status, seconds, startTimer, pauseTimer, stopTimer }}
+    >
       {children}
     </AttendanceContext.Provider>
   );
@@ -67,8 +90,7 @@ export const AttendanceProvider = ({ children }: { children: React.ReactNode }) 
 
 export const useAttendance = () => {
   const context = useContext(AttendanceContext);
-  if (!context) {
+  if (!context)
     throw new Error("useAttendance must be used within AttendanceProvider");
-  }
   return context;
 };

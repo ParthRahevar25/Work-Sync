@@ -1,15 +1,18 @@
-import { AttendanceProvider } from './context/AttendanceContext'
-import { AuthProvider } from './context/AuthContext'
-import AppRoutes from './routes/AppRoutes'
+import { AttendanceProvider } from "./context/AttendanceContext";
+import { AuthProvider } from "./context/AuthContext";
+import { NotificationProvider } from "./context/NotificationContext"; // ← NEW
+import AppRoutes from "./routes/AppRoutes";
 
 function App() {
   return (
     <AuthProvider>
       <AttendanceProvider>
-    <AppRoutes />
-  </AttendanceProvider>
-   </AuthProvider>
-  )
+        <NotificationProvider>
+          <AppRoutes />
+        </NotificationProvider>
+      </AttendanceProvider>
+    </AuthProvider>
+  );
 }
 
-export default App
+export default App;

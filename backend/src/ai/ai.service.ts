@@ -42,7 +42,7 @@ Context: Name: ${context.name}, Role: ${context.role}
     // Remove markdown code blocks if the AI includes them
     rawResponse = rawResponse.replace(/```json/g, "").replace(/```/g, "").trim();
 
-    return JSON.parse(rawResponse);
+    return JSON.parse(rawResponse)
   } catch (error) {
     console.error("AI Parsing Error. Raw response was:", error);
     return {

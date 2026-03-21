@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { getDashboardSummary } from "../controllers/summary.controllers";
-import { requireRole } from "../middlewares/auth"; // Using your reference naming
+import { getDashboardSummary, getDepartmentBreakdown, getTopPerformers, getWeeklyAttendance } from "../controllers/summary.controllers";
+import { requireRole } from "../middlewares/auth";
 
 const router = Router();
 
@@ -10,5 +10,8 @@ const router = Router();
  * Restricted to Admin and Manager roles.
  */
 router.get("/summary", requireRole(["admin", "manager"]), getDashboardSummary);
+router.get("/weekly",   requireRole(["admin", "manager"]),   getWeeklyAttendance);
+router.get("/departments", requireRole(["admin", "manager"]),getDepartmentBreakdown);
+router.get("/performers", requireRole(["admin", "manager"]), getTopPerformers);
 
 export default router;

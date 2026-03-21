@@ -3,14 +3,14 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 interface User {
   userId?: string;
-  name: string; 
+  name: string;
   role: string;
   email: string;
-  leaveBalance?:{
-    paid:string,
-    casual:string,
-    sick:string
-  }
+  leaveBalance?: {
+    paid: string;
+    casual: string;
+    sick: string;
+  };
 }
 
 interface AuthContextType {
@@ -45,7 +45,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUser(userData);
   };
 
-  const logout = async () => {
+  const logout = async (stopTimer?: () => void) => {
+    stopTimer?.(); 
     await api.post("/auth/logout");
     setUser(null);
   };
