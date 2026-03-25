@@ -8,8 +8,6 @@ const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 // 1. Get Current User Data
 export const getMe = async (req: any, res: Response) => {
   try {
-    // The middleware 'requireRole' already fetched the user and 
-    // attached it to 'req.user'. No need to query findById again!
     
     if (!req.user) {
       return res.status(404).json({ error: "User not found" });
@@ -41,7 +39,7 @@ export const login = async (req: Request, res: Response) => {
     }
 
     const token = jwt.sign(
-      { userId: user._id, role: user.role }, // 💡 Added role back to token for the middleware to read!
+      { userId: user._id, role: user.role },
       JWT_SECRET, 
       { expiresIn: "1d" }
     );

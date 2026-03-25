@@ -121,7 +121,7 @@ export default function Sidebar() {
       .toUpperCase()
       .slice(0, 2) ?? "?";
 
-  // ── Nav item ──────────────────────────────────
+  // Nav item
   const NavLink = ({ item }: { item: NavItem }) => {
     const isActive = location.pathname === item.path;
     return (
@@ -202,7 +202,6 @@ export default function Sidebar() {
       <div className="h-px bg-white/[0.06] mx-3 my-2" />
     );
 
-  // ─────────────────────────────────────────────
   return (
     <div
       style={{

@@ -31,7 +31,7 @@ export const applyLeave = async (req: any, res: Response) => {
     // Create leave — schema default status is "pending" (lowercase)
     const newLeave = await Leave.create({ employeeId, type, startDate, endDate, reason });
 
-    // ── Notify all admins + managers ─────────────────────────────────────────
+    // ── Notify all admins + managers
     const recipients = await User.find(
       { role: { $in: ["admin", "manager"] }, isActive: true },
       "_id"
@@ -83,7 +83,7 @@ export const updateLeaveStatus = async (req: any, res: Response) => {
     const { id }     = req.params;
     const { status } = req.body; // frontend sends "Approved" or "Rejected"
 
-    // Normalise → schema stores "approved" / "rejected"
+    // Normalise -> schema stores "approved" / "rejected"
     const normalised = status.toLowerCase() as "approved" | "rejected";
 
     const leave = await Leave.findById(id).populate("employeeId", "name email");
@@ -106,7 +106,7 @@ export const updateLeaveStatus = async (req: any, res: Response) => {
     leave.status = normalised;
     await leave.save();
 
-    // ── Notify the employee ───────────────────────────────────────────────────
+    // ── Notify the employee
     const populated  = leave.employeeId as any;
     const employeeId = populated?._id ?? leave.employeeId;
     const adminName  = req.user?.name ?? "Admin";

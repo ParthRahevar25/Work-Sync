@@ -33,7 +33,7 @@ const MyLeaveHistory = ({ refresh }: MyLeaveHistoryProps) => {
     fetchMyHistory();
   }, [refresh]);
 
-  // ── Case-insensitive status config ───────────
+  // Case-insensitive status config 
   const getStatusConfig = (
     status: string,
   ): { bg: string; dot: string; icon: JSX.Element } => {
@@ -59,7 +59,7 @@ const MyLeaveHistory = ({ refresh }: MyLeaveHistoryProps) => {
     }
   };
 
-  // ── Pagination math ───────────────────────────
+  // Pagination math
   const totalPages = Math.max(1, Math.ceil(history.length / PAGE_SIZE));
   const currentRows = useMemo(
     () => history.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),

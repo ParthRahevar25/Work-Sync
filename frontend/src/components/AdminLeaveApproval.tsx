@@ -35,7 +35,6 @@ const AdminLeaveApproval = () => {
       try {
         const res = await api.get("/leaves/all");
 
-        // FIX: proper two-argument sort comparator, case-insensitive status check
         const sorted = [...res.data].sort((a: LeaveRequest, b: LeaveRequest) => {
           const aP = a.status?.toLowerCase() === "pending";
           const bP = b.status?.toLowerCase() === "pending";

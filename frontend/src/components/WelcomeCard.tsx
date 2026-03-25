@@ -11,7 +11,6 @@ const WelcomeCard = () => {
     setMounted(true);
   }, []);
 
-  // 2. Deployment-Safe Date Logic
   const greeting = useMemo(() => {
     const hour = new Date().getHours();
     if (hour < 12) return "Good Morning";

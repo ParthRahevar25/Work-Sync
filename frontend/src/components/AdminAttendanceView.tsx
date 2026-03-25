@@ -23,7 +23,7 @@ interface AdminAttendanceRecord {
 
 const PAGE_SIZE = 10;
 
-// ── CSV export helper ─────────────────────────
+// CSV export helper
 const downloadCSV = (rows: Record<string, any>[], filename: string) => {
   if (!rows.length) return;
   const headers = Object.keys(rows[0]);
@@ -62,7 +62,7 @@ const AdminAttendanceView = () => {
     fetchAllLogs();
   }, []);
 
-  // ── Filter by search term ─────────────────────
+  // Filter by search term 
   const filteredLogs = useMemo(() => {
     const q = searchTerm.toLowerCase();
     return allLogs.filter(
@@ -77,7 +77,7 @@ const AdminAttendanceView = () => {
     setPage(1);
   }, [searchTerm]);
 
-  // ── Pagination math ───────────────────────────
+  // Pagination math 
   const totalPages = Math.max(1, Math.ceil(filteredLogs.length / PAGE_SIZE));
   const currentRows = useMemo(
     () => filteredLogs.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
@@ -101,7 +101,7 @@ const AdminAttendanceView = () => {
     );
   };
 
-  // ── Shared pagination strip ───────────────────
+  // Shared pagination strip
   const PaginationStrip = () => (
     <div className="flex items-center gap-2">
       <button

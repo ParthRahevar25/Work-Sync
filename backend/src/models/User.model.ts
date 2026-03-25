@@ -1,6 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-// 1. Define the Interface
 export interface IUser extends Document {
   email: string;
   name: string;
@@ -22,7 +21,7 @@ const userSchema = new Schema<IUser>({
     required: true, 
     select: false //Prevent password from being returned in queries by default
   },
-  name: { type: String, required: true }, // Added as you're using it in onboarding
+  name: { type: String, required: true },
   role: { type: String, enum: ["admin", "manager", "employee"], default: "employee" },
   employeeId: { type: mongoose.Schema.Types.ObjectId, ref: "Employee" },
   isActive: { type: Boolean, default: true },

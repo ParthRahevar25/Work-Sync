@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import Attendance from "../models/Attendence.model";
 
-// 🔹 Mark attendance (Check-In / Check-Out Toggle)
+// Mark attendance (Check-In / Check-Out Toggle)
 export const markAttendance = async (req:any, res: Response) => {
   try {
     const employeeId = req.user._id;
@@ -35,7 +35,7 @@ export const markAttendance = async (req:any, res: Response) => {
   }
 };
 
-// 🔹 Get own attendance (The missing function 1)
+// Get own attendance 
 export const getMyAttendance = async (req: any, res: Response) => {
   try {
     const employeeId = req.user._id;
@@ -46,7 +46,7 @@ export const getMyAttendance = async (req: any, res: Response) => {
   }
 };
 
-// 🔹 Admin view all attendance (The missing function 2)
+// Admin view all attendance 
 export const getAllAttendance = async (_req: Request, res: Response) => {
   try {
     const records = await Attendance.find()
@@ -58,7 +58,7 @@ export const getAllAttendance = async (_req: Request, res: Response) => {
   }
 };
 
-// 🔹 Update attendance (The missing function 3)
+// Update attendance 
 export const updateAttendance = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;

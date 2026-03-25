@@ -66,7 +66,7 @@ const TodaySummary = () => {
         value={`${stats?.attendance.percentage}%`}
         label={stats?.attendance.label}
         icon={<Users size={24} />}
-        trend="+2.1%" // Static trend for now, or add to backend
+        trend="+2.1%" // Static trend for now
         trendUp={true}
         color="blue"
         progress={parseFloat(stats?.attendance.percentage || "0")}

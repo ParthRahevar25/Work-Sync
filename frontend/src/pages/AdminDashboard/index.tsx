@@ -34,7 +34,6 @@ import {
 import api from "@/api/axios";
 import { useAuth } from "@/context/AuthContext";
 
-// ── Types ────────────────────────────────────
 interface Summary {
   attendance: { percentage: string; label: string };
   leaves: { count: string; label: string };
@@ -109,7 +108,6 @@ const C = {
   },
 } as const;
 
-// ── Helpers ──────────────────────────────────
 const ChartTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
   return (
@@ -152,8 +150,6 @@ const downloadCSV = (rows: Record<string, any>[], filename: string) => {
   a.click();
 };
 
-// ── Correct leave sort helper ─────────────────
-// FIX: was (a) => ... — JS sort requires TWO arguments for a valid comparator
 const sortLeaves = (data: LeaveReq[]): LeaveReq[] =>
   [...data].sort((a, b) => {
     // Pending always floats to the top
@@ -177,17 +173,15 @@ export default function AdminDashboard() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [updatedAt, setUpdatedAt] = useState(new Date());
 
-  // ── Separate leave fetcher so it can run on its own interval ──
+  
   const fetchLeaves = useCallback(async () => {
     try {
       const res = await api.get("/leaves/all");
       setLeaves(sortLeaves(res.data));
     } catch {
-      /* silent */
     }
   }, []);
 
-  // ── Main data load (all 6 endpoints in parallel) ──────────────
   useEffect(() => {
     setLoading(true);
     Promise.allSettled([
@@ -209,15 +203,11 @@ export default function AdminDashboard() {
     });
   }, [refreshKey]);
 
-  // ── Auto-refresh ONLY the leave queue every 30s ───────────────
-  // This means new employee leave requests appear in the admin queue
-  // without needing a full page reload
   useEffect(() => {
     const interval = setInterval(fetchLeaves, 30_000);
     return () => clearInterval(interval);
   }, [fetchLeaves]);
 
-  // ── Derived ───────────────────────────────────────────────────
   const pending = useMemo(
     () => leaves.filter((l) => l.status === "Pending"),
     [leaves],
@@ -259,7 +249,6 @@ export default function AdminDashboard() {
       "attendance_report",
     );
 
-  // ── Skeleton ──────────────────────────────────────────────────
   if (loading)
     return (
       <div className="p-8 space-y-8 animate-pulse">
@@ -279,7 +268,7 @@ export default function AdminDashboard() {
   return (
     <div className="relative z-10 p-6 lg:p-10 min-h-screen">
       <div className="max-w-[1600px] mx-auto space-y-8">
-        {/* ── Header ── */}
+        {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
             <div className="flex items-center gap-2.5 mb-2">
@@ -334,7 +323,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* ── KPI Cards ── */}
+        {/* KPI Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
           {(
             [
@@ -405,7 +394,7 @@ export default function AdminDashboard() {
           })}
         </div>
 
-        {/* ── Charts ── */}
+        {/* Charts */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
           {/* Bar chart — /dashboard/weekly */}
           <div className="xl:col-span-2 bg-slate-900/50 backdrop-blur border border-white/[0.07] rounded-[1.75rem] p-7 shadow-xl">
@@ -551,7 +540,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* ── Bottom 3 cards ── */}
+        {/* Bottom 3 cards */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
           {/* Live Feed — /attendance/all */}
           <div className="bg-slate-900/50 backdrop-blur border border-white/[0.07] rounded-[1.75rem] shadow-xl flex flex-col overflow-hidden">
@@ -767,7 +756,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* ── Attendance Table — /attendance/all ── */}
+        {/* Attendance Table — /attendance/all ── */}
         <div className="bg-slate-900/50 backdrop-blur border border-white/[0.07] rounded-[1.75rem] overflow-hidden shadow-xl">
           <div className="px-8 py-6 border-b border-white/[0.06] flex justify-between items-center">
             <div>

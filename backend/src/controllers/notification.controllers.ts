@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import mongoose from "mongoose";
 import Notification, { NotificationType } from "../models/Notification.model";
 
-// ── Internal helper — called from leave_controllers, never a route ────────────
+//Internal helper — called from leave_controllers, never a route
 // Creates one Notification document per recipient in one DB call.
 export const createNotification = async (
   userIds: mongoose.Types.ObjectId[],
@@ -16,7 +16,7 @@ export const createNotification = async (
   );
 };
 
-// ── GET /api/notifications/my ─────────────────────────────────────────────────
+//GET /api/notifications/my 
 // Returns the 30 most-recent notifications for the logged-in user, newest first.
 export const getMyNotifications = async (req: any, res: Response) => {
   try {
@@ -29,7 +29,7 @@ export const getMyNotifications = async (req: any, res: Response) => {
   }
 };
 
-// ── PUT /api/notifications/:id/read ──────────────────────────────────────────
+//PUT /api/notifications/:id/read 
 export const markOneRead = async (req: any, res: Response) => {
   try {
     await Notification.findOneAndUpdate(
@@ -42,7 +42,7 @@ export const markOneRead = async (req: any, res: Response) => {
   }
 };
 
-// ── PUT /api/notifications/all/read ──────────────────────────────────────────
+//PUT /api/notifications/all/read 
 export const markAllRead = async (req: any, res: Response) => {
   try {
     await Notification.updateMany(

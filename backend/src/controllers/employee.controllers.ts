@@ -58,7 +58,7 @@ export const getEmployeeById = async (req: Request, res: Response) => {
 
     res.json({
       ...employee,
-      accountInfo: userAccount // Now we know if they are active/deactive too
+      accountInfo: userAccount
     });
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch 360 view" });

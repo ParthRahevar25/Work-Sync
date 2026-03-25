@@ -20,7 +20,6 @@ export default function EmployeeProfileEditor() {
   const [saving, setSaving] = useState(false);
   const [employee, setEmployee] = useState<any>(null);
 
-  // Form State
   const [formData, setFormData] = useState({
     phone: "",
     address: "",

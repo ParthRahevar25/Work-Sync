@@ -4,11 +4,9 @@ import { requireRole } from "../middlewares/auth";
 
 const router = Router();
 
-/**
- * 🔹 GET /api/dashboard/summary
- * Aggregates attendance, leaves, and late counts for the dashboard cards.
- * Restricted to Admin and Manager roles.
- */
+
+// GET /api/dashboard/summary
+
 router.get("/summary", requireRole(["admin", "manager"]), getDashboardSummary);
 router.get("/weekly",   requireRole(["admin", "manager"]),   getWeeklyAttendance);
 router.get("/departments", requireRole(["admin", "manager"]),getDepartmentBreakdown);

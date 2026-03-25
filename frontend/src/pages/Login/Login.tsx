@@ -17,10 +17,10 @@ export default function Login() {
     const password = e.target.password.value;
 
     try {
-      // 🔒 The cookie is set automatically by the browser here
+      // The cookie is set automatically by the browser here
       const res = await api.post("/auth/login", { email, password });
 
-      // ✅ We only pass user data now, no token!
+      // We only pass user data now, no token!
       login(res.data.user);
 
       navigate("/dashboard");
