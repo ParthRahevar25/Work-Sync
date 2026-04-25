@@ -198,7 +198,7 @@ export default function Employees() {
                           <button
                             onClick={(e) => {
                               e.stopPropagation(); // Prevents opening the drawer
-                              navigate(`/employees/edit/${emp._id}`); // Adjust this route to match your App.tsx
+                              navigate(`/employees/edit/${emp._id}`);
                             }}
                             className="px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-[10px] font-black text-white uppercase tracking-widest transition-all"
                           >

@@ -90,13 +90,6 @@ export default function Sidebar() {
       isAdminOnly: true,
       group: "admin",
     },
-    {
-      name: "Settings",
-      path: "/settings",
-      icon: <Settings size={18} />,
-      isAdminOnly: false,
-      group: "core",
-    },
   ];
 
   const filtered = menuItems.filter((i) =>

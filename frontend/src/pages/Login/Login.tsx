@@ -88,12 +88,12 @@ export default function Login() {
                   <label className="text-sm font-semibold text-gray-700">
                     Password
                   </label>
-                  <a
+                  {/* <a
                     href="#"
                     className="text-sm font-medium text-blue-600 hover:text-blue-500"
                   >
                     Forgot?
-                  </a>
+                  </a> */}
                 </div>
                 <div className="relative">
                   <Lock

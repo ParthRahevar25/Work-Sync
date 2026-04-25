@@ -27,12 +27,12 @@ const actions = [
     path: "/work-sync-ai" 
   },
   { 
-    title: "Settings", 
-    desc: "Update your profile",
+    title: "Profile", 
+    desc: "View your profile",
     icon: <UserCircle size={28} />, 
     color: "amber",
     glow: "group-hover:shadow-amber-500/40",
-    path: "/settings" 
+    path: "/profile" 
   },
 ];
 
